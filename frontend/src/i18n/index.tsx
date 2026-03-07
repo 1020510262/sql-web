@@ -1,0 +1,246 @@
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
+
+export type Language = 'en' | 'zh-CN'
+
+type TranslationMap = Record<string, string>
+
+type I18nContextValue = {
+  language: Language
+  setLanguage: (language: Language) => void
+  t: (key: string, variables?: Record<string, string | number>) => string
+}
+
+const STORAGE_KEY = 'sql-central-console-language'
+
+const messages: Record<Language, TranslationMap> = {
+  en: {
+    'language.label': 'Language',
+    'language.english': 'English',
+    'language.chinese': '简体中文',
+    'login.badge': 'Internal Data Console',
+    'login.title': 'SQL Central Console',
+    'login.subtitle': 'Query approved internal databases from the browser while execution stays on your local machine.',
+    'login.card1.title': 'Cloud config only',
+    'login.card1.body': 'Users, roles, templates, and history live centrally.',
+    'login.card2.title': 'Local execution',
+    'login.card2.body': 'SQL runs through the local agent on localhost.',
+    'login.card3.title': 'Auditable',
+    'login.card3.body': 'Every query records who ran it and how long it took.',
+    'login.signIn': 'Sign in',
+    'login.username': 'Username',
+    'login.password': 'Password',
+    'login.submit': 'Login',
+    'login.submitting': 'Signing in...',
+    'login.failed': 'Login failed',
+    'dashboard.badge': 'SQL Central Console',
+    'dashboard.welcome': 'Welcome back, {name}',
+    'dashboard.role': 'Role: {role}. SQL still executes through your local agent only.',
+    'dashboard.target': 'Target: {name}',
+    'dashboard.logout': 'Logout',
+    'dashboard.manage': 'Manage Databases',
+    'dashboard.addUser': 'Add User',
+    'sidebar.title': 'Databases',
+    'sidebar.searchPlaceholder': 'Search database name, host, type, group...',
+    'sidebar.searchLabel': 'Search',
+    'sidebar.ungrouped': 'Ungrouped',
+    'sidebar.noResults': 'No databases match the current search.',
+    'query.title': 'SQL Console',
+    'query.subtitle': 'Execution is sent directly to the local agent.',
+    'query.run': 'Run SQL',
+    'query.running': 'Running...',
+    'results.title': 'Results',
+    'results.summary': '{rows} rows · {ms} ms',
+    'history.title': 'History',
+    'history.audit': 'Audit',
+    'history.empty': 'No queries recorded yet.',
+    'status.success': 'success',
+    'status.failed': 'failed',
+    'sqlTemplates.tab': 'Statements',
+    'sqlTemplates.badge': 'Cloud SQL Library',
+    'sqlTemplates.addTitle': 'Add SQL Statement',
+    'sqlTemplates.name': 'Title',
+    'sqlTemplates.category': 'Category',
+    'sqlTemplates.sql': 'SQL',
+    'sqlTemplates.save': 'Save Statement',
+    'sqlTemplates.saving': 'Saving...',
+    'sqlTemplates.cancel': 'Cancel',
+    'sqlTemplates.empty': 'No SQL statements available yet.',
+    'sqlTemplates.saveFailed': 'Failed to save SQL statement',
+    'credentials.badge': 'Local Agent',
+    'credentials.title': 'Save local credentials',
+    'credentials.subtitle': 'Enter the password for {name}. It will be saved only on this device.',
+    'credentials.password': 'Password',
+    'credentials.save': 'Save to Agent',
+    'credentials.saving': 'Saving...',
+    'credentials.cancel': 'Cancel',
+    'credentials.saveFailed': 'Failed to save local credentials',
+    'manager.title': 'Database Management',
+    'manager.badge': 'Configuration Center',
+    'manager.create': 'Create database',
+    'manager.edit': 'Edit database',
+    'manager.new': 'New Database',
+    'manager.delete': 'Delete',
+    'manager.save': 'Save',
+    'manager.saving': 'Saving...',
+    'manager.close': 'Close',
+    'manager.name': 'Name',
+    'manager.group': 'Group',
+    'manager.type': 'Type',
+    'manager.host': 'Host',
+    'manager.port': 'Port',
+    'manager.username': 'Username',
+    'manager.database': 'Database Name',
+    'manager.description': 'Description',
+    'manager.saveFailed': 'Failed to save database definition',
+    'manager.deleteFailed': 'Failed to disable database',
+    'manager.deleteConfirm': 'Delete will disable the cloud definition and clear the local credential on this device. Continue?',
+    'users.badge': 'Administration',
+    'users.title': 'Add User',
+    'users.username': 'Username',
+    'users.fullName': 'Full Name',
+    'users.password': 'Password',
+    'users.role': 'Role',
+    'users.save': 'Create User',
+    'users.saving': 'Creating...',
+    'users.close': 'Close',
+    'users.saveFailed': 'Failed to create user',
+    'errors.loadDashboard': 'Failed to load dashboard',
+    'errors.selectDatabase': 'Select a database first',
+    'errors.queryFailed': 'Query failed',
+    'errors.agentUnavailable': 'Local Agent is unavailable. Start the agent at http://127.0.0.1:17890 and try again.',
+  },
+  'zh-CN': {
+    'language.label': '语言',
+    'language.english': 'English',
+    'language.chinese': '简体中文',
+    'login.badge': '内部数据控制台',
+    'login.title': 'SQL Central Console',
+    'login.subtitle': '通过浏览器查询已授权的内部数据库，SQL 执行始终保留在你的本地机器。',
+    'login.card1.title': '云端仅存配置',
+    'login.card1.body': '用户、角色、模板和历史记录统一集中管理。',
+    'login.card2.title': '本地执行',
+    'login.card2.body': 'SQL 通过本地 localhost Agent 执行。',
+    'login.card3.title': '可审计',
+    'login.card3.body': '每条查询都会记录执行人和耗时。',
+    'login.signIn': '登录',
+    'login.username': '用户名',
+    'login.password': '密码',
+    'login.submit': '登录',
+    'login.submitting': '登录中...',
+    'login.failed': '登录失败',
+    'dashboard.badge': 'SQL 中央控制台',
+    'dashboard.welcome': '欢迎回来，{name}',
+    'dashboard.role': '角色：{role}。SQL 仍然只会通过本地 Agent 执行。',
+    'dashboard.target': '当前目标：{name}',
+    'dashboard.logout': '退出登录',
+    'dashboard.manage': '管理数据库',
+    'dashboard.addUser': '新增用户',
+    'sidebar.title': '数据库连接',
+    'sidebar.searchPlaceholder': '搜索名称、主机、类型、分组...',
+    'sidebar.searchLabel': '搜索',
+    'sidebar.ungrouped': '未分组',
+    'sidebar.noResults': '当前搜索条件下没有匹配的数据库。',
+    'query.title': 'SQL 控制台',
+    'query.subtitle': '执行请求会直接发送到本地 Agent。',
+    'query.run': '执行 SQL',
+    'query.running': '执行中...',
+    'results.title': '结果',
+    'results.summary': '{rows} 行 · {ms} 毫秒',
+    'history.title': '历史',
+    'history.audit': '审计',
+    'history.empty': '还没有查询记录。',
+    'status.success': '成功',
+    'status.failed': '失败',
+    'sqlTemplates.tab': '语句',
+    'sqlTemplates.badge': '云端语句库',
+    'sqlTemplates.addTitle': '新增 SQL 语句',
+    'sqlTemplates.name': '标题',
+    'sqlTemplates.category': '分类',
+    'sqlTemplates.sql': 'SQL 语句',
+    'sqlTemplates.save': '保存语句',
+    'sqlTemplates.saving': '保存中...',
+    'sqlTemplates.cancel': '取消',
+    'sqlTemplates.empty': '还没有 SQL 语句。',
+    'sqlTemplates.saveFailed': '保存 SQL 语句失败',
+    'credentials.badge': '本地 Agent',
+    'credentials.title': '保存本机凭据',
+    'credentials.subtitle': '请输入 {name} 的密码。它只会保存在当前设备。',
+    'credentials.password': '密码',
+    'credentials.save': '保存到 Agent',
+    'credentials.saving': '保存中...',
+    'credentials.cancel': '取消',
+    'credentials.saveFailed': '保存本机凭据失败',
+    'manager.title': '数据库管理',
+    'manager.badge': '配置中心',
+    'manager.create': '新增数据库',
+    'manager.edit': '编辑数据库',
+    'manager.new': '新建数据库',
+    'manager.delete': '删除',
+    'manager.save': '保存',
+    'manager.saving': '保存中...',
+    'manager.close': '关闭',
+    'manager.name': '名称',
+    'manager.group': '分组',
+    'manager.type': '类型',
+    'manager.host': '主机',
+    'manager.port': '端口',
+    'manager.username': '用户名',
+    'manager.database': '数据库名',
+    'manager.description': '描述',
+    'manager.saveFailed': '保存数据库定义失败',
+    'manager.deleteFailed': '禁用数据库失败',
+    'manager.deleteConfirm': '删除操作会禁用云端定义，并清除当前设备上的本地凭据。是否继续？',
+    'users.badge': '系统管理',
+    'users.title': '新增用户',
+    'users.username': '用户名',
+    'users.fullName': '姓名',
+    'users.password': '密码',
+    'users.role': '角色',
+    'users.save': '创建用户',
+    'users.saving': '创建中...',
+    'users.close': '关闭',
+    'users.saveFailed': '创建用户失败',
+    'errors.loadDashboard': '加载控制台失败',
+    'errors.selectDatabase': '请先选择数据库',
+    'errors.queryFailed': '查询失败',
+    'errors.agentUnavailable': '本地 Agent 不可用。请先启动 http://127.0.0.1:17890 上的 Agent，再重试。',
+  },
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null)
+
+function resolveInitialLanguage(): Language {
+  const stored = window.localStorage.getItem(STORAGE_KEY)
+  return stored === 'zh-CN' || stored === 'en' ? stored : 'en'
+}
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(resolveInitialLanguage)
+
+  const setLanguage = (next: Language) => {
+    setLanguageState(next)
+    window.localStorage.setItem(STORAGE_KEY, next)
+  }
+
+  const value = useMemo<I18nContextValue>(() => ({
+    language,
+    setLanguage,
+    t: (key, variables = {}) => {
+      const template = messages[language][key] || messages.en[key] || key
+      return Object.entries(variables).reduce(
+        (acc, [name, value]) => acc.replace(`{${name}}`, String(value)),
+        template,
+      )
+    },
+  }), [language])
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext)
+  if (!context) {
+    throw new Error('useI18n must be used within I18nProvider')
+  }
+  return context
+}
