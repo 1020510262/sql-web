@@ -33,7 +33,13 @@ export function QueryEditor({ value, onChange, onRun, running }: Props) {
           value={value}
           onChange={(next) => onChange(next || '')}
           theme="vs-light"
-          options={{ minimap: { enabled: false }, fontSize: 14, fontFamily: 'IBM Plex Mono' }}
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            fontFamily: '"IBM Plex Mono", Menlo, Consolas, "Courier New", monospace',
+            fontLigatures: false,
+            automaticLayout: true,
+          }}
         />
       </div>
     </section>

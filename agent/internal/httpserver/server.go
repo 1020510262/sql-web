@@ -116,13 +116,18 @@ func (s *Server) handleUpsertConnection(w http.ResponseWriter, r *http.Request) 
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "database_id and type are required"})
 		return
 	}
-	if payload.Type != "sqlite" && payload.Password == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "password is required for network databases"})
-		return
-	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	existing := s.config.FindProfile(payload.DatabaseID)
+	if payload.Type != "sqlite" && payload.Password == "" {
+		if existing == nil || existing.Password == "" {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "password is required for network databases"})
+			return
+		}
+		payload.Password = existing.Password
+	}
 
 	profile := config.DatabaseProfile{
 		DatabaseID: payload.DatabaseID,

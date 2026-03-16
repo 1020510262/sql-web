@@ -4,6 +4,7 @@ import { CredentialModal } from '../components/CredentialModal'
 import { DatabaseManagerModal } from '../components/DatabaseManagerModal'
 import { DatabaseSidebar } from '../components/DatabaseSidebar'
 import { LanguageSelector } from '../components/LanguageSelector'
+import { PasswordChangeModal } from '../components/PasswordChangeModal'
 import { QueryEditor } from '../components/QueryEditor'
 import { ResultsGrid } from '../components/ResultsGrid'
 import { SidePanel } from '../components/SidePanel'
@@ -13,12 +14,14 @@ import { useI18n } from '../i18n'
 import type {
   DatabaseFormInput,
   DatabaseItem,
+  LegacyQueryResponse,
   QueryHistoryItem,
   QueryResponse,
   RoleItem,
   SqlTemplateCreateInput,
   SqlTemplateItem,
   User,
+  PasswordChangeInput,
   UserCreateInput,
 } from '../types'
 
@@ -50,6 +53,8 @@ export function DashboardPage({ token, user, onLogout }: Props) {
   const [userLoading, setUserLoading] = useState(false)
   const [templateModalOpen, setTemplateModalOpen] = useState(false)
   const [templateSaving, setTemplateSaving] = useState(false)
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false)
+  const [passwordSaving, setPasswordSaving] = useState(false)
   const isAdmin = user.role === 'admin'
 
   const loadDashboard = async () => {
@@ -127,12 +132,13 @@ export function DashboardPage({ token, user, onLogout }: Props) {
       if (!hasCredential) {
         return
       }
-      const response = (await apiClient.executeLocalQuery(selectedId, sql)) as QueryResponse
-      setResult(response)
+      const response = (await apiClient.executeLocalQuery(selectedId, sql)) as QueryResponse | LegacyQueryResponse
+      const normalized = normalizeQueryResponse(response)
+      setResult(normalized)
       const historyItem = await apiClient.logHistory(token, {
         database_id: selectedId,
         sql,
-        execution_time_ms: response.execution_time_ms,
+        execution_time_ms: normalized.execution_time_ms,
         status: 'success',
       })
       setHistory((prev) => [historyItem, ...prev].slice(0, 50))
@@ -190,7 +196,8 @@ export function DashboardPage({ token, user, onLogout }: Props) {
   const handleUpdateDatabase = async (databaseId: number, payload: DatabaseFormInput) => {
     setManagerLoading(true)
     try {
-      await apiClient.updateDatabase(token, databaseId, payload)
+      const updated = await apiClient.updateDatabase(token, databaseId, payload)
+      await apiClient.saveLocalConnection(updated).catch(() => undefined)
       await loadDashboard()
     } finally {
       setManagerLoading(false)
@@ -225,6 +232,16 @@ export function DashboardPage({ token, user, onLogout }: Props) {
     }
   }
 
+  const handleChangePassword = async (payload: PasswordChangeInput) => {
+    setPasswordSaving(true)
+    try {
+      await apiClient.changePassword(token, payload)
+      setPasswordModalOpen(false)
+    } finally {
+      setPasswordSaving(false)
+    }
+  }
+
   const handleCreateTemplate = async (payload: SqlTemplateCreateInput) => {
     setTemplateSaving(true)
     try {
@@ -252,6 +269,9 @@ export function DashboardPage({ token, user, onLogout }: Props) {
                   {t('dashboard.addUser')}
                 </button>
               ) : null}
+              <button onClick={() => setPasswordModalOpen(true)} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+                {t('dashboard.changePassword')}
+              </button>
               <button onClick={() => setManagerOpen(true)} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                 {t('dashboard.manage')}
               </button>
@@ -289,6 +309,12 @@ export function DashboardPage({ token, user, onLogout }: Props) {
         onClose={() => setCredentialDatabase(null)}
         onSubmit={saveCredential}
       />
+      <PasswordChangeModal
+        open={passwordModalOpen}
+        loading={passwordSaving}
+        onClose={() => setPasswordModalOpen(false)}
+        onSubmit={handleChangePassword}
+      />
       <DatabaseManagerModal
         open={managerOpen}
         databases={managedDatabases}
@@ -313,4 +339,20 @@ export function DashboardPage({ token, user, onLogout }: Props) {
       />
     </>
   )
+}
+
+function normalizeQueryResponse(response: QueryResponse | LegacyQueryResponse): QueryResponse {
+  if ('results' in response) {
+    return response
+  }
+  return {
+    results: [
+      {
+        columns: response.columns,
+        rows: response.rows,
+        execution_time_ms: response.execution_time_ms,
+      },
+    ],
+    execution_time_ms: response.execution_time_ms,
+  }
 }

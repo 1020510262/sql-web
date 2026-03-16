@@ -481,3 +481,18 @@ sqlite3 sql_central_console.db "UPDATE databases SET is_active = 1 WHERE id = <d
 2. Encrypt or OS-protect local agent credential storage on Windows
 3. Add statement edit/delete and search
 4. Add role-based database permission assignment UI
+
+## Migrate SQLite Data to PostgreSQL
+
+If you are switching the metadata store from SQLite to PostgreSQL, use the migration script below.
+This will truncate the destination PostgreSQL tables and then copy all data from SQLite.
+
+```bash
+cd /opt/sql-central-console/backend
+source .venv/bin/activate
+export SQLITE_DATABASE_URL=sqlite:///./sql_central_console.db
+export DATABASE_URL=postgresql+psycopg2://sql_console:replace-this-password@127.0.0.1:5432/sql_central_console
+PYTHONPATH=. python scripts/migrate_sqlite_to_postgres.py
+```
+
+Then update your `.env` on the server to point to PostgreSQL and restart the API service.

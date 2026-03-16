@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.models import Role, User
-from app.schemas.auth import RoleResponse, UserCreate, UserSummary
-from app.services.auth import require_admin
-from app.services.security import hash_password
+from app.schemas.auth import PasswordChangeRequest, RoleResponse, UserCreate, UserSummary
+from app.services.auth import get_current_user, require_admin
+from app.services.security import hash_password, verify_password
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -39,3 +39,20 @@ def create_user(payload: UserCreate, _: User = Depends(require_admin), db: Sessi
     db.refresh(user)
 
     return UserSummary(id=user.id, username=user.username, full_name=user.full_name, role=role.name)
+
+
+@router.post("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    payload: PasswordChangeRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+    if payload.current_password == payload.new_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password must be different")
+
+    current_user.password_hash = hash_password(payload.new_password)
+    db.add(current_user)
+    db.commit()
+    return None

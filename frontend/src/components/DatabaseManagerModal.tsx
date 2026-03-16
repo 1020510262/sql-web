@@ -122,9 +122,27 @@ export function DatabaseManagerModal({ open, databases, loading, onClose, onCrea
               <input value={form.group_name || ''} onChange={(e) => setForm((prev) => ({ ...prev, group_name: e.target.value }))} className="field" />
             </Field>
             <Field label={t('manager.type')}>
-              <select value={form.type} onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value, port: e.target.value === 'postgresql' ? 5432 : e.target.value === 'mysql' ? 3306 : 0 }))} className="field">
+              <select
+                value={form.type}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    type: e.target.value,
+                    port:
+                      e.target.value === 'postgresql'
+                        ? 5432
+                        : e.target.value === 'mysql'
+                          ? 3306
+                          : e.target.value === 'oracle'
+                            ? 1521
+                            : 0,
+                  }))
+                }
+                className="field"
+              >
                 <option value="mysql">MySQL</option>
                 <option value="postgresql">PostgreSQL</option>
+                <option value="oracle">Oracle</option>
                 <option value="sqlite">SQLite</option>
               </select>
             </Field>

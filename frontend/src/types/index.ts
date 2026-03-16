@@ -24,6 +24,11 @@ export type UserCreateInput = {
   role_name: string
 }
 
+export type PasswordChangeInput = {
+  current_password: string
+  new_password: string
+}
+
 export type DatabaseItem = {
   id: number
   name: string
@@ -73,7 +78,18 @@ export type SqlTemplateCreateInput = {
   sql_content: string
 }
 
+export type QueryResult = {
+  columns: string[]
+  rows: unknown[][]
+  execution_time_ms: number
+}
+
 export type QueryResponse = {
+  results: QueryResult[]
+  execution_time_ms: number
+}
+
+export type LegacyQueryResponse = {
   columns: string[]
   rows: unknown[][]
   execution_time_ms: number

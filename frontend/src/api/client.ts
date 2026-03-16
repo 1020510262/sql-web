@@ -5,6 +5,7 @@ import type {
   LoginResponse,
   QueryHistoryItem,
   RoleItem,
+  PasswordChangeInput,
   SqlTemplateCreateInput,
   SqlTemplateItem,
   UserCreateInput,
@@ -98,6 +99,12 @@ export const apiClient = {
       body: JSON.stringify(payload),
     }, token),
 
+  changePassword: (token: string, payload: PasswordChangeInput) =>
+    request<void>('/api/users/me/password', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }, token),
+
   createDatabase: (token: string, payload: DatabaseFormInput) =>
     request<DatabaseItem>('/api/databases', {
       method: 'POST',
@@ -132,7 +139,7 @@ export const apiClient = {
   getLocalConnection: (databaseId: number) =>
     agentRequest<AgentConnectionSummary>(`/connections/${databaseId}`),
 
-  saveLocalConnection: (database: DatabaseItem, password: string) =>
+  saveLocalConnection: (database: DatabaseItem, password?: string) =>
     agentRequest<AgentConnectionSummary>('/connections/upsert', {
       method: 'POST',
       body: JSON.stringify({
@@ -142,7 +149,7 @@ export const apiClient = {
         port: database.port,
         database: database.database_name,
         username: database.username || '',
-        password,
+        password: password || '',
       }),
     }),
 

@@ -28,6 +28,11 @@ class UserCreate(BaseModel):
     role_name: str
 
 
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
 class RoleResponse(BaseModel):
     id: int
     name: str
