@@ -1,4 +1,6 @@
 import Editor from '@monaco-editor/react'
+import type * as monaco from 'monaco-editor'
+import { useCallback, useRef } from 'react'
 import { useI18n } from '../i18n'
 
 type Props = {
@@ -10,6 +12,25 @@ type Props = {
 
 export function QueryEditor({ value, onChange, onRun, running }: Props) {
   const { t } = useI18n()
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
+
+  const handleMount = useCallback((editor: monaco.editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor
+
+    const remeasure = () => {
+      editor.updateOptions({ fontFamily: '"IBM Plex Mono", Menlo, Consolas, "Courier New", monospace' })
+      editor.remeasureFonts()
+      editor.layout()
+    }
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        remeasure()
+      })
+    } else {
+      setTimeout(remeasure, 300)
+    }
+  }, [])
 
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-slate-200/70">
@@ -33,6 +54,8 @@ export function QueryEditor({ value, onChange, onRun, running }: Props) {
           value={value}
           onChange={(next) => onChange(next || '')}
           theme="vs-light"
+          onMount={handleMount}
+          loading={t('query.loading')}
           options={{
             minimap: { enabled: false },
             fontSize: 14,
