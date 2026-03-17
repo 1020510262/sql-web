@@ -255,7 +255,7 @@ export function DashboardPage({ token, user, onLogout }: Props) {
   return (
     <>
       <div className="h-screen overflow-hidden bg-[linear-gradient(180deg,_#fffaf0,_#ecfeff_45%,_#f8fafc)] px-4 py-4 text-ink sm:px-6 lg:px-8">
-        <div className="mx-auto flex h-full min-h-0 max-w-[1600px] flex-col">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-none flex-col">
           <header className="mb-4 flex flex-col gap-4 rounded-[32px] border border-white/70 bg-white/80 px-6 py-5 shadow-xl shadow-slate-200/60 backdrop-blur lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-accent">{t('dashboard.badge')}</p>
@@ -292,13 +292,17 @@ export function DashboardPage({ token, user, onLogout }: Props) {
             </div>
           ) : null}
 
-          <main className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[360px_minmax(0,1fr)_340px]">
-            <DatabaseSidebar databases={databases} selectedId={selectedId} onSelect={setSelectedId} />
-            <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-4">
+          <main className="grid min-h-0 flex-1 items-stretch gap-4 lg:grid-cols-[360px_minmax(0,1fr)_340px]">
+            <div className="min-h-0 min-w-0 h-full lg:justify-self-start">
+              <DatabaseSidebar databases={databases} selectedId={selectedId} onSelect={setSelectedId} />
+            </div>
+            <div className="grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4">
               <QueryEditor value={sql} onChange={setSql} onRun={runQuery} running={loading} />
               <ResultsGrid result={result} error={error} />
             </div>
-            <SidePanel history={history} templates={templates} onAddTemplate={() => setTemplateModalOpen(true)} onUseTemplate={setSql} />
+            <div className="min-h-0 min-w-0 h-full overflow-hidden lg:justify-self-stretch">
+              <SidePanel history={history} templates={templates} onAddTemplate={() => setTemplateModalOpen(true)} onUseTemplate={setSql} />
+            </div>
           </main>
         </div>
       </div>

@@ -37,7 +37,7 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
   )
 
   return (
-    <aside className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
+    <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold">{t('sidebar.title')}</h2>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">{databases.length}</span>
