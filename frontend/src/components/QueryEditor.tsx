@@ -19,7 +19,7 @@ export function QueryEditor({ value, onChange, onRun, running }: Props) {
 
     const remeasure = () => {
       editor.updateOptions({ fontFamily: '"IBM Plex Mono", Menlo, Consolas, "Courier New", monospace' })
-      editor.remeasureFonts()
+      (editor as any).remeasureFonts() 
       editor.layout()
     }
 
