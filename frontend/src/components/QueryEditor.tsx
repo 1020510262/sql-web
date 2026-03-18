@@ -19,7 +19,11 @@ export function QueryEditor({ value, onChange, onRun, running }: Props) {
 
     const remeasure = () => {
       editor.updateOptions({ fontFamily: '"IBM Plex Mono", Menlo, Consolas, "Courier New", monospace' })
+      
+      // ✅ 修改处：使用 (editor as any) 绕过类型检查
+      // 或者如果确定是 standalone editor，可以强转为包含该方法的特定类型
       (editor as any).remeasureFonts() 
+      
       editor.layout()
     }
 
