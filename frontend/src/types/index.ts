@@ -78,6 +78,10 @@ export type SqlTemplateCreateInput = {
   sql_content: string
 }
 
+export type SqlTemplateDeleteResponse = {
+  detail: string
+}
+
 export type QueryResult = {
   columns: string[]
   rows: unknown[][]

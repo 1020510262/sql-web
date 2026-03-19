@@ -7,6 +7,7 @@ import type {
   RoleItem,
   PasswordChangeInput,
   SqlTemplateCreateInput,
+  SqlTemplateDeleteResponse,
   SqlTemplateItem,
   UserCreateInput,
 } from '../types'
@@ -91,6 +92,11 @@ export const apiClient = {
     request<SqlTemplateItem>('/api/templates', {
       method: 'POST',
       body: JSON.stringify(payload),
+    }, token),
+
+  deleteTemplate: (token: string, templateId: number) =>
+    request<SqlTemplateDeleteResponse>(`/api/templates/${templateId}`, {
+      method: 'DELETE',
     }, token),
 
   createUser: (token: string, payload: UserCreateInput) =>

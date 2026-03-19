@@ -252,6 +252,18 @@ export function DashboardPage({ token, user, onLogout }: Props) {
     }
   }
 
+  const handleDeleteTemplate = async (templateId: number) => {
+    setTemplateSaving(true)
+    try {
+      await apiClient.deleteTemplate(token, templateId)
+      setTemplates((prev) => prev.filter((item) => item.id !== templateId))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('sqlTemplates.deleteFailed'))
+    } finally {
+      setTemplateSaving(false)
+    }
+  }
+
   return (
     <>
       <div className="h-screen overflow-hidden bg-[linear-gradient(180deg,_#fffaf0,_#ecfeff_45%,_#f8fafc)] px-4 py-4 text-ink sm:px-6 lg:px-8">
@@ -301,7 +313,13 @@ export function DashboardPage({ token, user, onLogout }: Props) {
               <ResultsGrid result={result} error={error} />
             </div>
             <div className="min-h-0 min-w-0 h-full overflow-hidden lg:justify-self-stretch">
-              <SidePanel history={history} templates={templates} onAddTemplate={() => setTemplateModalOpen(true)} onUseTemplate={setSql} />
+              <SidePanel
+                history={history}
+                templates={templates}
+                onAddTemplate={() => setTemplateModalOpen(true)}
+                onUseTemplate={setSql}
+                onDeleteTemplate={handleDeleteTemplate}
+              />
             </div>
           </main>
         </div>

@@ -22,3 +22,7 @@ class SQLTemplateCreate(BaseModel):
     category: str = "default"
     sql_content: str
     parameter_schema: Optional[str] = None
+
+
+class SQLTemplateDeleteResponse(BaseModel):
+    detail: str
