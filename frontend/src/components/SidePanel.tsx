@@ -180,9 +180,26 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
                                 <button
                                   type="button"
                                   onClick={(event) => void handleDeleteTemplate(event, item.id)}
-                                  className="rounded-full border border-rose-200 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                                  className="inline-flex items-center justify-center rounded-full border border-rose-200 p-2 text-rose-600 hover:bg-rose-50"
+                                  aria-label={t('sqlTemplates.delete')}
+                                  title={t('sqlTemplates.delete')}
                                 >
-                                  {t('sqlTemplates.delete')}
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-4 w-4"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="M3 6h18" />
+                                    <path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6" />
+                                    <path d="M6 6l1 14a2 2 0 0 0 2 1.8h6a2 2 0 0 0 2-1.8l1-14" />
+                                    <path d="M10 10v6" />
+                                    <path d="M14 10v6" />
+                                  </svg>
                                 </button>
                               </div>
                             </div>

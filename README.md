@@ -491,7 +491,7 @@ This will truncate the destination PostgreSQL tables and then copy all data from
 cd /opt/sql-central-console/backend
 source .venv/bin/activate
 export SQLITE_DATABASE_URL=sqlite:///./sql_central_console.db
-export DATABASE_URL=postgresql+psycopg2://sql_console:replace-this-password@127.0.0.1:5432/sql_central_console
+export DATABASE_URL=postgresql+psycopg://sql_console:replace-this-password@127.0.0.1:5432/sql_central_console
 PYTHONPATH=. python scripts/migrate_sqlite_to_postgres.py
 ```
 
