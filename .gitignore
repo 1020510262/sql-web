@@ -6,6 +6,10 @@ backend/dist/
 # Dependencies
 node_modules/
 vendor/
+**/node_modules/
+**/__pycache__/
+*.pyc
+.venv/
 
 # IDE
 .vscode/
@@ -22,10 +26,26 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Environment
+# Environment configuration (DO NOT TRACK)
 .env
 .env.local
 .env.*.local
+.env.example
+.env.production
+backend/.env
+backend/.env.example
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
 # TypeScript
 *.tsbuildinfo
+
+# Build artifacts
+*.egg-info/
+.eggs/
