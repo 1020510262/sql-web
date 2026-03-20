@@ -36,7 +36,6 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
   const [tab, setTab] = useState<'history' | 'templates'>('history')
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
   const [expandedHistory, setExpandedHistory] = useState<Record<number, boolean>>({})
-  const [expandedTemplates, setExpandedTemplates] = useState<Record<number, boolean>>({})
 
   const groupedTemplates = useMemo(() => {
     const sortedTemplates = [...templates].sort((a, b) => {
@@ -71,13 +70,6 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
     setExpandedHistory((prev) => ({
       ...prev,
       [historyId]: !prev[historyId],
-    }))
-  }
-
-  const toggleTemplate = (templateId: number) => {
-    setExpandedTemplates((prev) => ({
-      ...prev,
-      [templateId]: !prev[templateId],
     }))
   }
 
@@ -158,17 +150,16 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
                   {!collapsed ? (
                     <div className="space-y-3">
                       {items.map((item) => {
-                        const expanded = !!expandedTemplates[item.id]
                         return (
                           <div
                             key={item.id}
                             role="button"
                             tabIndex={0}
-                            onClick={() => toggleTemplate(item.id)}
+                            onClick={() => onUseTemplate(item.sql_content)}
                             onKeyDown={(event) => {
                               if (event.key === 'Enter' || event.key === ' ') {
                                 event.preventDefault()
-                                toggleTemplate(item.id)
+                                onUseTemplate(item.sql_content)
                               }
                             }}
                             className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left transition hover:border-slate-300"
@@ -204,13 +195,10 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
                               </div>
                             </div>
                             <p className="mt-2 text-xs text-slate-500">{item.created_by_name}</p>
-                            <p className="mt-2 break-all font-mono text-xs text-slate-600" style={previewStyle(expanded)}>
+                            <p className="mt-2 line-clamp-3 break-all font-mono text-xs text-slate-600">
                               {item.sql_content}
                             </p>
-                            <div className="mt-2 flex items-center justify-between gap-3 text-xs text-slate-400">
-                              <span>{formatDeviceLocalTime(item.created_at)}</span>
-                              <span className="text-slate-400">{expanded ? '▴' : '▾'}</span>
-                            </div>
+                            <div className="mt-2 text-xs text-slate-400">{formatDeviceLocalTime(item.created_at)}</div>
                           </div>
                         )
                       })}

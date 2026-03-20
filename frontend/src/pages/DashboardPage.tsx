@@ -87,6 +87,11 @@ export function DashboardPage({ token, user, onLogout }: Props) {
     }
   }
 
+  const refreshTemplates = async () => {
+    const templateList = await apiClient.getTemplates(token)
+    setTemplates(templateList || [])
+  }
+
   useEffect(() => {
     loadDashboard().catch((err) => {
       if (err instanceof ApiError && err.status === 401) {
@@ -256,7 +261,7 @@ export function DashboardPage({ token, user, onLogout }: Props) {
     setTemplateSaving(true)
     try {
       await apiClient.deleteTemplate(token, templateId)
-      setTemplates((prev) => prev.filter((item) => item.id !== templateId))
+      await refreshTemplates()
     } catch (err) {
       setError(err instanceof Error ? err.message : t('sqlTemplates.deleteFailed'))
     } finally {
