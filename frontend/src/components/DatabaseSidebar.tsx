@@ -11,6 +11,7 @@ type Props = {
 export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
   const { t } = useI18n()
   const [search, setSearch] = useState('')
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
 
   const groupedDatabases = useMemo(() => {
     const keyword = search.trim().toLowerCase()
@@ -36,6 +37,13 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
     [groupedDatabases],
   )
 
+  const toggleGroup = (groupName: string) => {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }))
+  }
+
   return (
     <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
       <div className="flex items-center justify-between">
@@ -55,35 +63,44 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
           {groupEntries.map(([groupName, items]) => (
             <section key={groupName} className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-700">{groupName}</h3>
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(groupName)}
+                  className="flex items-center gap-2 text-left"
+                >
+                  <h3 className="text-sm font-semibold text-slate-700">{groupName}</h3>
+                  <span className={`text-xs text-slate-400 transition ${(collapsedGroups[groupName] ?? true) ? '-rotate-90' : ''}`}>▾</span>
+                </button>
                 <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">{items.length}</span>
               </div>
-              <div className="space-y-3">
-                {items.map((db) => {
-                  const active = db.id === selectedId
-                  return (
-                    <button
-                      key={db.id}
-                      onClick={() => onSelect(db.id)}
-                      className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
-                        active
-                          ? 'border-accent bg-emerald-50 shadow-sm'
-                          : 'border-slate-200 bg-white hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div>
-                          <p className="font-medium text-slate-900">{db.name}</p>
-                          <p className="text-sm text-slate-500">{db.type} · {db.host}:{db.port}</p>
+              {!(collapsedGroups[groupName] ?? true) ? (
+                <div className="space-y-3">
+                  {items.map((db) => {
+                    const active = db.id === selectedId
+                    return (
+                      <button
+                        key={db.id}
+                        onClick={() => onSelect(db.id)}
+                        className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
+                          active
+                            ? 'border-accent bg-emerald-50 shadow-sm'
+                            : 'border-slate-200 bg-white hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div>
+                            <p className="font-medium text-slate-900">{db.name}</p>
+                            <p className="text-sm text-slate-500">{db.type} · {db.host}:{db.port}</p>
+                          </div>
+                          <span className="rounded-full bg-slate-950 px-2 py-1 font-mono text-xs uppercase text-white">
+                            {db.type}
+                          </span>
                         </div>
-                        <span className="rounded-full bg-slate-950 px-2 py-1 font-mono text-xs uppercase text-white">
-                          {db.type}
-                        </span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : null}
             </section>
           ))}
         </div>

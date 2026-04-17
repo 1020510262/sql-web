@@ -277,7 +277,6 @@ export function DashboardPage({ token, user, onLogout }: Props) {
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-accent">{t('dashboard.badge')}</p>
               <h1 className="mt-2 font-display text-3xl font-semibold">{t('dashboard.welcome', { name: user.full_name })}</h1>
-              <p className="text-sm text-slate-500">{t('dashboard.role', { role: user.role })}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <LanguageSelector />
@@ -286,9 +285,6 @@ export function DashboardPage({ token, user, onLogout }: Props) {
                   {t('dashboard.addUser')}
                 </button>
               ) : null}
-              <button onClick={() => setPasswordModalOpen(true)} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
-                {t('dashboard.changePassword')}
-              </button>
               <button onClick={() => setManagerOpen(true)} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                 {t('dashboard.manage')}
               </button>
@@ -297,6 +293,9 @@ export function DashboardPage({ token, user, onLogout }: Props) {
                   {t('dashboard.target', { name: selectedDatabase.name })}
                 </div>
               ) : null}
+              <button onClick={() => setPasswordModalOpen(true)} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+                {t('dashboard.changePassword')}
+              </button>
               <button onClick={onLogout} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
                 {t('dashboard.logout')}
               </button>
@@ -309,13 +308,12 @@ export function DashboardPage({ token, user, onLogout }: Props) {
             </div>
           ) : null}
 
-          <main className="grid min-h-0 flex-1 items-stretch gap-4 lg:grid-cols-[360px_minmax(0,1fr)_340px]">
+          <main className="grid min-h-0 flex-1 items-stretch gap-4 lg:grid-cols-[290px_minmax(0,1fr)_290px] lg:grid-rows-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
             <div className="min-h-0 min-w-0 h-full lg:justify-self-start">
               <DatabaseSidebar databases={databases} selectedId={selectedId} onSelect={setSelectedId} />
             </div>
-            <div className="grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,1.4fr)_minmax(0,1fr)] gap-4">
+            <div className="grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,1fr)] gap-4">
               <QueryEditor value={sql} onChange={setSql} onRun={runQuery} running={loading} />
-              <ResultsGrid result={result} error={error} />
             </div>
             <div className="min-h-0 min-w-0 h-full overflow-hidden lg:justify-self-stretch">
               <SidePanel
@@ -325,6 +323,9 @@ export function DashboardPage({ token, user, onLogout }: Props) {
                 onUseTemplate={setSql}
                 onDeleteTemplate={handleDeleteTemplate}
               />
+            </div>
+            <div className="min-h-0 min-w-0 lg:col-span-3">
+              <ResultsGrid result={result} error={error} />
             </div>
           </main>
         </div>

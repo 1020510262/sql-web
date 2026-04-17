@@ -42,7 +42,7 @@ export function ResultsGrid({ result, error }: Props) {
   }, [activeResult])
 
   return (
-    <section className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-slate-200/70">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-slate-200/70">
       <div className="border-b border-slate-200 px-5 py-4">
         <h2 className="font-display text-lg font-semibold">{t('results.title')}</h2>
         {result ? (

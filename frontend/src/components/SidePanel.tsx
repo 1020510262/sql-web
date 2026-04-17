@@ -82,7 +82,7 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
   }
 
   return (
-    <section className="flex h-full min-h-0 w-full min-w-[340px] max-w-[340px] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
+    <section className="flex h-full min-h-0 w-full min-w-[300px] max-w-[300px] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
       <div className="flex items-center justify-between gap-3">
         <div className="inline-flex rounded-2xl bg-slate-100 p-1">
           <button onClick={() => setTab('history')} className={`rounded-2xl px-4 py-2 text-sm ${tab === 'history' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}>
@@ -133,7 +133,7 @@ export function SidePanel({ history, templates, onAddTemplate, onUseTemplate, on
           <div className="space-y-4">
             {templates.length === 0 ? <p className="text-sm text-slate-500">{t('sqlTemplates.empty')}</p> : null}
             {templateGroups.map(([category, items]) => {
-              const collapsed = collapsedGroups[category]
+              const collapsed = collapsedGroups[category] ?? true
               return (
                 <section key={category} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
                   <div className="mb-3 flex items-center justify-between">
