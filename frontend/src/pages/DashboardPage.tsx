@@ -308,7 +308,7 @@ export function DashboardPage({ token, user, onLogout }: Props) {
             </div>
           ) : null}
 
-          <main className="grid min-h-0 flex-1 items-stretch gap-4 lg:grid-cols-[290px_minmax(0,1fr)_290px] lg:grid-rows-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+          <main className="grid min-h-0 flex-1 items-stretch gap-4 lg:grid-cols-[300px_minmax(0,1fr)_300px] lg:grid-rows-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
             <div className="min-h-0 min-w-0 h-full lg:justify-self-start">
               <DatabaseSidebar databases={databases} selectedId={selectedId} onSelect={setSelectedId} />
             </div>

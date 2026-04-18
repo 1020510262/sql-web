@@ -45,7 +45,7 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
   }
 
   return (
-    <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
+    <aside className="flex h-full min-h-0 w-full min-w-[300px] max-w-[300px] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-xl shadow-slate-200/70">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold">{t('sidebar.title')}</h2>
         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">{databases.length}</span>
@@ -61,14 +61,14 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
         <div className="space-y-4">
           {groupEntries.length === 0 ? <p className="text-sm text-slate-500">{t('sidebar.noResults')}</p> : null}
           {groupEntries.map(([groupName, items]) => (
-            <section key={groupName} className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
+            <section key={groupName} className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
               <div className="mb-3 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => toggleGroup(groupName)}
-                  className="flex items-center gap-2 text-left"
+                  className="flex min-w-0 items-center gap-2 text-left"
                 >
-                  <h3 className="text-sm font-semibold text-slate-700">{groupName}</h3>
+                  <h3 className="min-w-0 break-words text-sm font-semibold text-slate-700">{groupName}</h3>
                   <span className={`text-xs text-slate-400 transition ${(collapsedGroups[groupName] ?? true) ? '-rotate-90' : ''}`}>▾</span>
                 </button>
                 <span className="rounded-full bg-white px-2 py-1 text-xs text-slate-500">{items.length}</span>
@@ -87,10 +87,10 @@ export function DatabaseSidebar({ databases, selectedId, onSelect }: Props) {
                             : 'border-slate-200 bg-white hover:border-slate-300'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-4">
-                          <div>
-                            <p className="font-medium text-slate-900">{db.name}</p>
-                            <p className="text-sm text-slate-500">{db.type} · {db.host}:{db.port}</p>
+                        <div className="flex min-w-0 items-center justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="break-words font-medium text-slate-900">{db.name}</p>
+                            <p className="break-words text-sm text-slate-500">{db.type} · {db.host}:{db.port}</p>
                           </div>
                           <span className="rounded-full bg-slate-950 px-2 py-1 font-mono text-xs uppercase text-white">
                             {db.type}
